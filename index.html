@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * { margin: 0; padding: 0; }
+    body { background: transparent; }
+    model-viewer { width: 100vw; height: 100vh; background: transparent; }
+  </style>
+</head>
+<body>
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+  <model-viewer
+    src="https://raw.githubusercontent.com/albertjcg-glitch/test/main/testcard.glb"
+    ar
+    ar-modes="webxr scene-viewer quick-look"
+    camera-controls
+    tone-mapping="neutral"
+    shadow-intensity="1.72"
+    exposure="1.32"
+    auto-rotate
+    rotation-per-second="15deg"
+    disable-zoom>
+  </model-viewer>
+</body>
+</html>
