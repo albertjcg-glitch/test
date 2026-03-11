@@ -22,7 +22,18 @@
       width: 100vw;
       height: 100vh;
       background: transparent;
-      animation: scaleIn 1s ease-out forwards;
+      opacity: 0;
+      animation: scaleIn 1s ease-out 0.25s forwards;
+    }
+
+    /* hide the loading bar */
+    model-viewer::part(default-progress-bar) {
+      display: none;
+    }
+
+    /* hide the drag prompt icon */
+    model-viewer::part(default-ar-button) {
+      display: none;
     }
   </style>
 </head>
@@ -38,7 +49,8 @@
     exposure="1.32"
     auto-rotate
     rotation-per-second="15deg"
-    disable-zoom>
+    disable-zoom
+    interaction-prompt="none">
   </model-viewer>
 </body>
 </html>
