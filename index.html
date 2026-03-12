@@ -49,16 +49,13 @@
     const viewer = document.getElementById('card');
 
     viewer.addEventListener('load', () => {
-      // wait for the fade-in delay to start
-      setTimeout(() => {
-        // rotate from back to front
-        viewer.cameraOrbit = '0deg 90deg auto';
-      }, 250);
+      viewer.interpolationDecay = 100;
+      viewer.setAttribute('camera-orbit', '0deg 90deg auto');
 
-      // after the flip finishes, enable auto-rotate
       setTimeout(() => {
+        viewer.interpolationDecay = 50;
         viewer.autoRotate = true;
-        viewer.rotationPerSecond = '15deg';
+        viewer.rotationPerSecond = '5deg';
       }, 1500);
     });
   </script>
