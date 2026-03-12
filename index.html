@@ -6,13 +6,11 @@
   <style>
     * { margin: 0; padding: 0; }
     body { background: transparent; }
-
     model-viewer {
       width: 100vw;
       height: 100vh;
       background: transparent;
     }
-
     model-viewer::part(default-progress-bar) {
       display: none;
     }
@@ -31,15 +29,22 @@
     disable-zoom
     interaction-prompt="none">
   </model-viewer>
-
   <script>
     const viewer = document.getElementById('card');
+    let introComplete = false;
+
+    viewer.addEventListener('camera-change', (e) => {
+      if (!introComplete && e.detail.source === 'user-interaction') {
+        viewer.interpolationDecay = 50;
+        introComplete = true;
+      }
+    });
 
     viewer.addEventListener('load', () => {
       viewer.interpolationDecay = 800;
       viewer.setAttribute('camera-orbit', '0deg 90deg auto');
-
       setTimeout(() => {
+        introComplete = true;
         viewer.interpolationDecay = 50;
         viewer.autoRotate = true;
         viewer.rotationPerSecond = '5deg';
