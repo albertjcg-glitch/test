@@ -39,11 +39,11 @@
       done=true;
       mv.interpolationDecay=800;setTimeout(()=>mv.interpolationDecay=85,1400);
     },4000);
-    setTimeout(()=>{mv.setAttribute('auto-rotate','');mv.setAttribute('rotation-per-second','5deg');},0);
+    setTimeout(()=>{mv.setAttribute('auto-rotate','');mv.setAttribute('rotation-per-second','5deg');},4000);
   }
   if(mv.loaded)runIntro();else mv.addEventListener('load',runIntro,{once:true});
   (function(){
-    function applyScroll(prog){const h=0+(70-0)*prog;mv.setAttribute('camera-orbit',h.toFixed(1)+'deg 90deg auto');}
+    function applyScroll(prog){if(typeof done!=='undefined'&&!done)return;const h=0+(70-0)*prog;mv.setAttribute('camera-orbit',h.toFixed(1)+'deg 90deg auto');}
     if(window!==window.parent){
       /* iframe / Framer embed — IntersectionObserver reports intersection with the top-level viewport */
       new IntersectionObserver(function(e){applyScroll(e[0].intersectionRatio);},{threshold:Array.from({length:101},function(_,i){return i/100;})}).observe(mv);
