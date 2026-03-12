@@ -4,14 +4,13 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>3D Model Viewer</title>
+  <!-- MVS:{"enableIntro":true,"introStartH":133,"introStartV":43,"introStartDist":0,"enableRoll":true,"introStartRoll":-31,"introEndRoll":0,"introDecay":500,"introDuration":2900,"postIntroDecay":85,"smoothRotateStart":true,"enableObjAnim":false,"objAnimDelay":0,"objAnimStartY":60,"objAnimEndY":0,"objAnimStartX":58,"objAnimEndX":0,"objAnimStartZ":-120,"objAnimEndZ":0,"objAnimDuration":1400,"objAnimEasing":"ease-out","objAnimLoop":false,"gltfAnimName":"","gltfAutoplay":false,"autoRotate":true,"rotationPerSecond":4.5,"autoRotateDelay":500,"enableScroll":false,"scrollEffect":"cam-h","scrollCamStartH":0,"scrollCamEndH":70,"scrollObjStartY":0,"scrollObjEndY":360,"scrollStartVH":0,"scrollRangeVH":2,"orbitH":0,"orbitV":90,"orbitHMin":0,"orbitHMax":360,"orbitVMin":0,"orbitVMax":180,"distanceMode":"auto","distanceValue":2,"fovMode":"auto","fovValue":45,"cameraTarget":"auto","shadowIntensity":1.33,"shadowSoftness":1,"exposure":1.32,"toneMapping":"auto","environmentImage":"","scale":1,"baseOrientX":0,"baseOrientY":0,"baseOrientZ":0,"enableFovAnim":false,"introFovStart":10,"enableOpacity":true,"introOpacityStart":0,"posterUrl":"","enableParallax":false,"parallaxStrength":15,"selectedVariant":"","disableZoom":true,"disablePan":false,"disableTap":false,"interactionPrompt":"none","interactionPromptStyle":"basic","interactionPromptThreshold":3000,"orbitSensitivity":1,"zoomSensitivity":1,"panSensitivity":1} -->
   <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
   <style>
     *{margin:0;padding:0}html,body{background:transparent;overflow:hidden}
     model-viewer{width:100vw;height:100vh;background:transparent}
     model-viewer::part(default-progress-bar){display:none}
-    #mv{opacity:0;transform:rotate(-31deg)}
-    @keyframes mv-roll{from{transform:rotate(-31deg)}to{transform:rotate(0deg)}}
-    @keyframes mv-fade{from{opacity:0}to{opacity:1}}
+    #mv{transform:rotate(-31deg)}@keyframes mv-roll{from{transform:rotate(-31deg)}to{transform:rotate(0deg)}}#mv{opacity:0}@keyframes mv-fade{from{opacity:0}to{opacity:1}}
   </style>
 </head>
 <body>
@@ -20,36 +19,38 @@
   id="mv"
   alt="3D Model"
   camera-controls
-  camera-orbit="106deg 45deg auto"
-  shadow-intensity="1.72"
+  camera-orbit="133deg 43deg auto"
+  shadow-intensity="1.33"
+  shadow-softness="1"
   exposure="1.32"
-  tone-mapping="neutral"
+  tone-mapping="auto"
   interaction-prompt="none"
   disable-zoom
-  interpolation-decay="50"
+  interpolation-decay="85"
+    style="--poster-color:transparent"
   ></model-viewer>
   <script>
     var mv=document.getElementById('mv');
   var done=false,itid;
-  var animDuration=2800;
-  mv.addEventListener('camera-change',function(e){if(!done&&e.detail.source==='user-interaction'){clearTimeout(itid);done=true;mv.setAttribute('interpolation-decay','50');}});
+  mv.addEventListener('camera-change',function(e){if(!done&&e.detail.source==='user-interaction'){clearTimeout(itid);done=true;mv.setAttribute('interpolation-decay','85');}});
   var introPoller=setInterval(function(){
     if(typeof mv.getCameraOrbit==='function'&&mv.modelIsVisible){
       clearInterval(introPoller);
       try{mv.resetTurntableRotation();}catch(e){}
-      mv.setAttribute('camera-orbit','106.0001deg 45deg auto');
+      setTimeout(function(){mv.setAttribute('auto-rotate-delay',0);mv.autoRotate=true;mv.rotationPerSecond='4.5deg';},500);
+      mv.setAttribute('camera-orbit','133.0001deg 43deg auto');
       setTimeout(function(){
-        mv.setAttribute('interpolation-decay','800');
+        mv.setAttribute('interpolation-decay','500');
         mv.setAttribute('camera-orbit','0deg 90deg auto');
-        mv.style.animation='mv-fade 1200ms ease-out forwards, mv-roll '+animDuration+'ms cubic-bezier(0.45,0.05,0.55,0.95) forwards';
+        mv.style.animation='mv-roll 2900ms cubic-bezier(0.45,0.05,0.55,0.95) forwards,mv-fade 2900ms ease-in-out forwards';
         itid=setTimeout(function(){
           done=true;
-          mv.autoRotate=true;mv.rotationPerSecond='3.5deg';
-        },animDuration);
+          mv.setAttribute('auto-rotate-delay',500);
+        },2900);
         setTimeout(function(){
-          mv.setAttribute('interpolation-decay','800');setTimeout(function(){mv.setAttribute('interpolation-decay','50');},1400);
-        },animDuration);
-      },500);
+          mv.setAttribute('interpolation-decay','500');setTimeout(function(){mv.setAttribute('interpolation-decay','85');},1400);
+        },2900);
+      },50);
     }
   },200);
   </script>
