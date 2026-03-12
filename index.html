@@ -15,7 +15,6 @@
   <model-viewer
   src="https://raw.githubusercontent.com/albertjcg-glitch/test/main/3d_profile_card.glb"
   id="mv"
-  alt="3D Model"
   camera-controls
   camera-orbit="266deg 43deg auto"
   shadow-intensity="1.72"
@@ -26,24 +25,32 @@
   ></model-viewer>
   <script>
     var mv=document.getElementById('mv');
-  var done=false,itid;
-  mv.addEventListener('camera-change',function(e){if(!done&&e.detail.source==='user-interaction'){clearTimeout(itid);done=true;mv.interpolationDecay=85;}});
-  var introPoller=setInterval(function(){
-    if(typeof mv.getCameraOrbit==='function'&&mv.modelIsVisible){
-      clearInterval(introPoller);
-      mv.resetTurntableRotation();
-      mv.interpolationDecay=800;
-      mv.setAttribute('camera-orbit','0deg 90deg auto');
-      var rrs=null;(function rollTick(ts){if(!rrs)rrs=ts;var t=Math.min((ts-rrs)/4000,1);var e=t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;var r=-32.5+(0--32.5)*e;mv.setAttribute('orientation','0deg 0deg '+r.toFixed(3)+'deg');if(t<1)requestAnimationFrame(rollTick);else mv.setAttribute('orientation','0deg 0deg 0deg');})(performance.now());
-      itid=setTimeout(function(){
-        done=true;
-        mv.autoRotate=true;mv.rotationPerSecond='5deg';
-      },4000);
-      setTimeout(function(){
-        mv.interpolationDecay=800;setTimeout(function(){mv.interpolationDecay=85;},1400);
-      },4000);
-    }
-  },200);
+    var done=false,itid;
+
+    mv.addEventListener('camera-change',function(e){
+      if(!done&&e.detail.source==='user-interaction'){
+        clearTimeout(itid);done=true;mv.interpolationDecay=85;
+      }
+    });
+
+    var poll=setInterval(function(){
+      if(typeof mv.getCameraOrbit==='function'&&mv.modelIsVisible){
+        clearInterval(poll);
+        mv.resetTurntableRotation();
+        mv.interpolationDecay=800;
+        mv.setAttribute('camera-orbit','0deg 90deg auto');
+
+        setTimeout(function(){
+          done=true;
+          mv.autoRotate=true;
+          mv.rotationPerSecond='5deg';
+        },4000);
+
+        setTimeout(function(){
+          mv.interpolationDecay=85;
+        },4000);
+      }
+    },200);
   </script>
 </body>
 </html>
