@@ -23,7 +23,10 @@
       height: 100vh;
       background: transparent;
       opacity: 0;
-      animation: fadeIn 1s ease-out 0.25s forwards;
+    }
+
+    model-viewer.reveal {
+      animation: fadeIn 1s ease-out forwards;
     }
 
     model-viewer::part(default-progress-bar) {
@@ -49,7 +52,9 @@
     const viewer = document.getElementById('card');
 
     viewer.addEventListener('load', () => {
-      viewer.interpolationDecay = 100;
+      // start fade and flip at the same time
+      viewer.classList.add('reveal');
+      viewer.interpolationDecay = 50;
       viewer.setAttribute('camera-orbit', '0deg 90deg auto');
 
       setTimeout(() => {
