@@ -6,51 +6,49 @@
   <title>3D Model Viewer</title>
   <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
   <style>
-    *{margin:0;padding:0}body{background:transparent}
+    *{margin:0;padding:0}html,body{background:transparent;overflow:hidden}
     model-viewer{width:100vw;height:100vh;background:transparent}
     model-viewer::part(default-progress-bar){display:none}
+    #mv{transform:rotate(-31deg)}@keyframes mv-roll{from{transform:rotate(-31deg)}to{transform:rotate(0deg)}}
   </style>
 </head>
 <body>
   <model-viewer
   src="https://raw.githubusercontent.com/albertjcg-glitch/test/main/3d_profile_card.glb"
   id="mv"
+  alt="3D Model"
   camera-controls
-  camera-orbit="266deg 43deg auto"
+  camera-orbit="106deg 45deg auto"
   shadow-intensity="1.72"
   exposure="1.32"
   tone-mapping="neutral"
   interaction-prompt="none"
   disable-zoom
+  interpolation-decay="50"
   ></model-viewer>
   <script>
     var mv=document.getElementById('mv');
-    var done=false,itid;
-
-    mv.addEventListener('camera-change',function(e){
-      if(!done&&e.detail.source==='user-interaction'){
-        clearTimeout(itid);done=true;mv.interpolationDecay=85;
-      }
-    });
-
-    var poll=setInterval(function(){
-      if(typeof mv.getCameraOrbit==='function'&&mv.modelIsVisible){
-        clearInterval(poll);
-        mv.resetTurntableRotation();
-        mv.interpolationDecay=800;
+  var done=false,itid;
+  mv.addEventListener('camera-change',function(e){if(!done&&e.detail.source==='user-interaction'){clearTimeout(itid);done=true;mv.setAttribute('interpolation-decay','50');}});
+  var introPoller=setInterval(function(){
+    if(typeof mv.getCameraOrbit==='function'&&mv.modelIsVisible){
+      clearInterval(introPoller);
+      try{mv.resetTurntableRotation();}catch(e){}
+      mv.setAttribute('camera-orbit','106.0001deg 45deg auto');
+      setTimeout(function(){
+        mv.setAttribute('interpolation-decay','800');
         mv.setAttribute('camera-orbit','0deg 90deg auto');
-
-        setTimeout(function(){
+        mv.style.animation='mv-roll 4000ms cubic-bezier(0.45,0.05,0.55,0.95) forwards';
+        itid=setTimeout(function(){
           done=true;
-          mv.autoRotate=true;
-          mv.rotationPerSecond='5deg';
+          mv.autoRotate=true;mv.rotationPerSecond='3.5deg';
         },4000);
-
         setTimeout(function(){
-          mv.interpolationDecay=85;
+          mv.setAttribute('interpolation-decay','800');setTimeout(function(){mv.setAttribute('interpolation-decay','50');},1400);
         },4000);
-      }
-    },200);
+      },50);
+    }
+  },200);
   </script>
 </body>
 </html>
