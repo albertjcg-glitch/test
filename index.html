@@ -36,14 +36,14 @@
     const viewer = document.getElementById('card');
 
     viewer.addEventListener('load', () => {
-      viewer.interpolationDecay = 100;
+      viewer.interpolationDecay = 40;
       viewer.setAttribute('camera-orbit', '0deg 90deg auto');
 
       setTimeout(() => {
         viewer.interpolationDecay = 50;
         viewer.autoRotate = true;
         viewer.rotationPerSecond = '5deg';
-      }, 1500);
+      }, 2500);
     });
   </script>
 </body>
