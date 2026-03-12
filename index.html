@@ -9,11 +9,9 @@
     *{margin:0;padding:0}body{background:transparent}
     model-viewer{width:100vw;height:100vh;background:transparent}
     model-viewer::part(default-progress-bar){display:none}
-    #dbg{position:fixed;top:4px;left:4px;font:11px monospace;color:lime;background:rgba(0,0,0,.7);padding:4px 8px;border-radius:4px;z-index:999;pointer-events:none}
   </style>
 </head>
 <body>
-  <div id="dbg">waiting...</div>
   <model-viewer
   src="https://raw.githubusercontent.com/albertjcg-glitch/test/main/3d_profile_card.glb"
   id="mv"
@@ -26,38 +24,38 @@
   disable-zoom
   ></model-viewer>
   <script>
-    var d=document.getElementById('dbg');
     var mv=document.getElementById('mv');
-    d.textContent='script ran';
+    var done=false,introRan=false,itid;
 
-    mv.addEventListener('load',function(){
-      d.textContent='load fired';
-      mv.interpolationDecay=800;
-      mv.setAttribute('camera-orbit','0deg 90deg auto');
-      setTimeout(function(){
-        d.textContent='auto-rotate on';
-        mv.autoRotate=true;
-        mv.rotationPerSecond='5deg';
-      },4000);
+    mv.addEventListener('camera-change',function(e){
+      if(!done&&e.detail.source==='user-interaction'){
+        clearTimeout(itid);done=true;mv.interpolationDecay=85;
+      }
     });
 
-    // Fallback: check every 200ms
-    var tries=0;
-    var poll=setInterval(function(){
-      tries++;
-      d.textContent='poll #'+tries+' loaded='+mv.loaded+' getCam='+(typeof mv.getCameraOrbit);
-      if(typeof mv.getCameraOrbit==='function' && mv.modelIsVisible){
-        clearInterval(poll);
-        d.textContent='poll triggered intro';
+    function runIntro(){
+      if(introRan)return;
+      introRan=true;
+      mv.resetTurntableRotation();
+      mv.interpolationDecay=800;
+      mv.setAttribute('camera-orbit','0deg 90deg auto');
+      itid=setTimeout(function(){
+        done=true;
         mv.interpolationDecay=800;
-        mv.setAttribute('camera-orbit','0deg 90deg auto');
-        setTimeout(function(){
-          mv.autoRotate=true;
-          mv.rotationPerSecond='5deg';
-          d.textContent='done';
-        },4000);
+        setTimeout(function(){mv.interpolationDecay=85;},1400);
+      },4000);
+      setTimeout(function(){
+        mv.autoRotate=true;
+        mv.rotationPerSecond='5deg';
+      },0);
+    }
+
+    // Polling: load event doesn't fire in Framer iframe context
+    var poll=setInterval(function(){
+      if(typeof mv.getCameraOrbit==='function'&&mv.modelIsVisible){
+        clearInterval(poll);
+        runIntro();
       }
-      if(tries>100)clearInterval(poll);
     },200);
   </script>
 </body>
