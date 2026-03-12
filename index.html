@@ -26,7 +26,8 @@
   interaction-prompt="none"
   disable-zoom
   ></model-viewer>
-  <script>
+  <script type="module">
+    customElements.whenDefined('model-viewer').then(() => {
     const mv=document.getElementById('mv');
   let done=false,itid;
   mv.addEventListener('camera-change',(e)=>{if(!done&&e.detail.source==='user-interaction'){clearTimeout(itid);done=true;mv.interpolationDecay=85;}});
@@ -41,6 +42,14 @@
     },4000);
     setTimeout(()=>{mv.setAttribute('auto-rotate','');mv.setAttribute('rotation-per-second','5deg');},0);
   });
+  window.addEventListener('scroll',()=>{
+    const sh=window.innerHeight,sy=window.scrollY;
+    const prog=Math.max(0,Math.min(1,(sy-sh*0)/(sh*2)));
+    const h=0+(70-0)*prog;mv.setAttribute('camera-orbit',h.toFixed(1)+'deg 90deg auto');
+    
+    
+  });
+    });
   </script>
 </body>
 </html>
