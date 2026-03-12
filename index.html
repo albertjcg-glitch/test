@@ -9,7 +9,9 @@
     *{margin:0;padding:0}html,body{background:transparent;overflow:hidden}
     model-viewer{width:100vw;height:100vh;background:transparent}
     model-viewer::part(default-progress-bar){display:none}
-    #mv{transform:rotate(-31deg)}@keyframes mv-roll{from{transform:rotate(-31deg)}to{transform:rotate(0deg)}}
+    #mv{opacity:0;transform:rotate(-31deg)}
+    @keyframes mv-roll{from{transform:rotate(-31deg)}to{transform:rotate(0deg)}}
+    @keyframes mv-fade{from{opacity:0}to{opacity:1}}
   </style>
 </head>
 <body>
@@ -29,6 +31,7 @@
   <script>
     var mv=document.getElementById('mv');
   var done=false,itid;
+  var animDuration=2800;
   mv.addEventListener('camera-change',function(e){if(!done&&e.detail.source==='user-interaction'){clearTimeout(itid);done=true;mv.setAttribute('interpolation-decay','50');}});
   var introPoller=setInterval(function(){
     if(typeof mv.getCameraOrbit==='function'&&mv.modelIsVisible){
@@ -38,15 +41,15 @@
       setTimeout(function(){
         mv.setAttribute('interpolation-decay','800');
         mv.setAttribute('camera-orbit','0deg 90deg auto');
-        mv.style.animation='mv-roll 4000ms cubic-bezier(0.45,0.05,0.55,0.95) forwards';
+        mv.style.animation='mv-fade 1200ms ease-out forwards, mv-roll '+animDuration+'ms cubic-bezier(0.45,0.05,0.55,0.95) forwards';
         itid=setTimeout(function(){
           done=true;
           mv.autoRotate=true;mv.rotationPerSecond='3.5deg';
-        },4000);
+        },animDuration);
         setTimeout(function(){
           mv.setAttribute('interpolation-decay','800');setTimeout(function(){mv.setAttribute('interpolation-decay','50');},1400);
-        },4000);
-      },50);
+        },animDuration);
+      },500);
     }
   },200);
   </script>
