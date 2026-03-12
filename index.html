@@ -18,8 +18,6 @@
   alt="3D Model"
   camera-controls
   camera-orbit="266deg 43deg auto"
-  min-camera-orbit="0deg 0deg auto"
-  max-camera-orbit="360deg 180deg auto"
   shadow-intensity="1.72"
   exposure="1.32"
   tone-mapping="neutral"
@@ -28,32 +26,27 @@
   ></model-viewer>
   <script>
     var mv=document.getElementById('mv');
-  let done=false,itid;
-  mv.addEventListener('camera-change',(e)=>{if(!done&&e.detail.source==='user-interaction'){clearTimeout(itid);done=true;mv.interpolationDecay=85;}});
-  function runIntro(){
-    mv.resetTurntableRotation?.();
-    mv.interpolationDecay=800;
-    mv.setAttribute('camera-orbit','0deg 90deg auto');
-    let rrs=null;(function rollTick(ts){if(!rrs)rrs=ts;const t=Math.min((ts-rrs)/4000,1);const e=t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;const r=-32.5+(0--32.5)*e;mv.style.transform='rotate('+r.toFixed(3)+'deg)';if(t<1)requestAnimationFrame(rollTick);else mv.style.transform='';})(performance.now());
-    itid=setTimeout(()=>{
-      done=true;
-      mv.interpolationDecay=800;setTimeout(()=>mv.interpolationDecay=85,1400);
-    },4000);
-    setTimeout(()=>{mv.setAttribute('auto-rotate','');mv.setAttribute('rotation-per-second','5deg');},4000);
-  }
-  if(mv.loaded)runIntro();else mv.addEventListener('load',runIntro,{once:true});
-  (function(){
-    function applyScroll(prog){if(typeof done!=='undefined'&&!done)return;const h=0+(70-0)*prog;mv.setAttribute('camera-orbit',h.toFixed(1)+'deg 90deg auto');}
-    if(window!==window.parent){
-      /* iframe / Framer embed — IntersectionObserver reports intersection with the top-level viewport */
-      new IntersectionObserver(function(e){applyScroll(e[0].intersectionRatio);},{threshold:Array.from({length:101},function(_,i){return i/100;})}).observe(mv);
-    }else{
-      window.addEventListener('scroll',function(){
-        var sh=window.innerHeight,sy=window.scrollY;
-        applyScroll(Math.max(0,Math.min(1,(sy-sh*0)/(sh*2))));
-      });
+    let done=false,itid;
+    mv.addEventListener('camera-change',(e)=>{if(!done&&e.detail.source==='user-interaction'){clearTimeout(itid);done=true;mv.interpolationDecay=85;}});
+
+    function runIntro(){
+      mv.resetTurntableRotation?.();
+      mv.interpolationDecay=800;
+      mv.setAttribute('camera-orbit','0deg 90deg auto');
+      let rrs=null;(function rollTick(ts){if(!rrs)rrs=ts;const t=Math.min((ts-rrs)/4000,1);const e=t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;const r=-32.5+(0--32.5)*e;mv.style.transform='rotate('+r.toFixed(3)+'deg)';if(t<1)requestAnimationFrame(rollTick);else mv.style.transform='';})(performance.now());
+      itid=setTimeout(()=>{
+        done=true;
+        mv.interpolationDecay=800;setTimeout(()=>mv.interpolationDecay=85,1400);
+      },4000);
+      setTimeout(()=>{mv.setAttribute('auto-rotate','');mv.setAttribute('rotation-per-second','5deg');},0);
     }
-  })();
+
+    var checkReady = setInterval(function() {
+      if (mv.loaded) {
+        clearInterval(checkReady);
+        runIntro();
+      }
+    }, 100);
   </script>
 </body>
 </html>
