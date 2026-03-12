@@ -15,8 +15,11 @@
   <model-viewer
   src="https://raw.githubusercontent.com/albertjcg-glitch/test/main/3d_profile_card.glb"
   id="mv"
+  alt="3D Model"
   camera-controls
   camera-orbit="266deg 43deg auto"
+  min-camera-orbit="0deg 0deg auto"
+  max-camera-orbit="360deg 180deg auto"
   shadow-intensity="1.72"
   exposure="1.32"
   tone-mapping="neutral"
@@ -25,38 +28,21 @@
   ></model-viewer>
   <script>
     var mv=document.getElementById('mv');
-    var done=false,introRan=false,itid;
-
-    mv.addEventListener('camera-change',function(e){
-      if(!done&&e.detail.source==='user-interaction'){
-        clearTimeout(itid);done=true;mv.interpolationDecay=85;
-      }
-    });
-
-    function runIntro(){
-      if(introRan)return;
-      introRan=true;
-      mv.resetTurntableRotation();
-      mv.interpolationDecay=800;
-      mv.setAttribute('camera-orbit','0deg 90deg auto');
-      itid=setTimeout(function(){
-        done=true;
-        mv.interpolationDecay=800;
-        setTimeout(function(){mv.interpolationDecay=85;},1400);
-      },4000);
-      setTimeout(function(){
-        mv.autoRotate=true;
-        mv.rotationPerSecond='5deg';
-      },0);
-    }
-
-    // Polling: load event doesn't fire in Framer iframe context
-    var poll=setInterval(function(){
-      if(typeof mv.getCameraOrbit==='function'&&mv.modelIsVisible){
-        clearInterval(poll);
-        runIntro();
-      }
-    },200);
+  var done=false,itid,introStarted=false;
+  mv.addEventListener('camera-change',function(e){if(!done&&e.detail.source==='user-interaction'){clearTimeout(itid);done=true;mv.interpolationDecay=85;}});
+  function runIntro(){
+    if(introStarted)return;introStarted=true;
+    mv.interpolationDecay=800;
+    mv.setAttribute('camera-orbit','0deg 90deg auto');
+    let rrs=null;(function rollTick(ts){if(!rrs)rrs=ts;const t=Math.min((ts-rrs)/4000,1);const e=t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;const r=-32.5+(0--32.5)*e;mv.style.transform='rotate('+r.toFixed(3)+'deg)';if(t<1)requestAnimationFrame(rollTick);else mv.style.transform='';})(performance.now());
+    itid=setTimeout(function(){
+      done=true;
+      mv.interpolationDecay=800;setTimeout(function(){mv.interpolationDecay=85;},1400);
+      mv.autoRotate=true;mv.rotationPerSecond='5deg';
+    },4000);
+  }
+  mv.addEventListener('load',runIntro);
+  var introPoller=setInterval(function(){if(introStarted){clearInterval(introPoller);return;}if(typeof mv.getCameraOrbit==='function'&&mv.modelIsVisible){clearInterval(introPoller);runIntro();}},200);
   </script>
 </body>
 </html>
