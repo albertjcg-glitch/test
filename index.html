@@ -9,14 +9,16 @@
     *{margin:0;padding:0}body{background:transparent}
     model-viewer{width:100vw;height:100vh;background:transparent}
     model-viewer::part(default-progress-bar){display:none}
+    #mv{transform:rotate(-31.5deg)}@keyframes mv-roll{from{transform:rotate(-31.5deg)}to{transform:rotate(0deg)}}
   </style>
 </head>
 <body>
   <model-viewer
   src="https://raw.githubusercontent.com/albertjcg-glitch/test/main/3d_profile_card.glb"
   id="mv"
+  alt="3D Model"
   camera-controls
-  camera-orbit="266deg 43deg auto"
+  camera-orbit="262deg 43deg auto"
   shadow-intensity="1.72"
   exposure="1.32"
   tone-mapping="neutral"
@@ -25,32 +27,35 @@
   ></model-viewer>
   <script>
     var mv=document.getElementById('mv');
-    var done=false,itid;
-
-    mv.addEventListener('camera-change',function(e){
-      if(!done&&e.detail.source==='user-interaction'){
-        clearTimeout(itid);done=true;mv.interpolationDecay=85;
-      }
-    });
-
-    var poll=setInterval(function(){
-      if(typeof mv.getCameraOrbit==='function'&&mv.modelIsVisible){
-        clearInterval(poll);
-        mv.resetTurntableRotation();
-        mv.interpolationDecay=800;
-        mv.setAttribute('camera-orbit','0deg 90deg auto');
-
-        setTimeout(function(){
-          done=true;
-          mv.autoRotate=true;
-          mv.rotationPerSecond='5deg';
-        },4000);
-
-        setTimeout(function(){
-          mv.interpolationDecay=85;
-        },4000);
-      }
-    },200);
+  var done=false,itid;
+  mv.addEventListener('camera-change',function(e){if(!done&&e.detail.source==='user-interaction'){clearTimeout(itid);done=true;mv.interpolationDecay=85;}});
+  var introPoller=setInterval(function(){
+    if(typeof mv.getCameraOrbit==='function'&&mv.modelIsVisible){
+      clearInterval(introPoller);
+      mv.interpolationDecay=800;
+      mv.setAttribute('camera-orbit','0deg 90deg auto');
+      mv.style.animation='mv-roll 4000ms cubic-bezier(0.45,0.05,0.55,0.95) forwards';
+      itid=setTimeout(function(){
+        done=true;
+        mv.autoRotate=true;mv.rotationPerSecond='5deg';
+      },4000);
+      setTimeout(function(){
+        mv.interpolationDecay=800;setTimeout(function(){mv.interpolationDecay=85;},1400);
+      },4000);
+    }
+  },200);
+  (function(){
+    function applyScroll(prog){if(typeof done!=='undefined'&&!done)return;const h=0+(70-0)*prog;mv.setAttribute('camera-orbit',h.toFixed(1)+'deg 90deg auto');}
+    if(window!==window.parent){
+      /* iframe / Framer embed — IntersectionObserver reports intersection with the top-level viewport */
+      new IntersectionObserver(function(e){applyScroll(e[0].intersectionRatio);},{threshold:Array.from({length:101},function(_,i){return i/100;})}).observe(mv);
+    }else{
+      window.addEventListener('scroll',function(){
+        var sh=window.innerHeight,sy=window.scrollY;
+        applyScroll(Math.max(0,Math.min(1,(sy-sh*0)/(sh*2))));
+      });
+    }
+  })();
   </script>
 </body>
 </html>
